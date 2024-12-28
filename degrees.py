@@ -111,7 +111,7 @@ def shortest_path(source, target):
         for movie, person in neighbors: # Get the movie and person from each neighbor
 
             #Check to ensure the person is not in the visited set and that the person is not already in the frontier
-            if (person not in Visisted) and (Frontier.contains_state(person) == False): 
+            if (person not in Visisted): 
                 NewNode = Node(person, CurrentNode, movie) # Create a new node with the person, currentNode, and movie as the state, parent, and action
 
                 if NewNode.state == target: # Check if the new nodes state (person ID) is equal to the target ID
