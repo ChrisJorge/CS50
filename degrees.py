@@ -105,13 +105,13 @@ def shortest_path(source, target):
 
     while Frontier.empty() == False: # Loop through the frontier as long as it has nodes
         CurrentNode = Frontier.remove() # Remove the first node from the frontier
-        Visisted.add(CurrentNode) # Add the person ID to the visisted set
+        Visisted.add(CurrentNode.state) # Add the person ID to the visisted set
 
         neighbors = neighbors_for_person(CurrentNode.state) # Get all possible neighbors for the current person
         for movie, person in neighbors: # Get the movie and person from each neighbor
 
             #Check to ensure the person is not in the visited set and that the person is not already in the frontier
-            if (person not in Visisted): 
+            if (person not in Visisted) and (Frontier.contains_state(person) == False): 
                 NewNode = Node(person, CurrentNode, movie) # Create a new node with the person, currentNode, and movie as the state, parent, and action
 
                 if NewNode.state == target: # Check if the new nodes state (person ID) is equal to the target ID
