@@ -55,8 +55,9 @@ def load_data(directory):
 def main():
     if len(sys.argv) > 2:
         sys.exit("Usage: python degrees.py [directory]")
-    # directory = sys.argv[1] if len(sys.argv) == 2 else "large"
-    directory = 'small'
+    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
+    # directory = 'small'
+   
 
     # Load data from files into memory
     print("Loading data...")
@@ -91,49 +92,39 @@ def shortest_path(source, target):
     that connect the source to the target.
 
     If no possible path, returns None.
-    """
-    Frontier = QueueFrontier() # Initialize the Frontier which will be used in the problem.
-    VisitedFrontier = set() # Initialize a set of all seen movie person pairs
-    GoalFound = False
-    Element = 1
-    # print(neighbors_for_person(source))
+    """       
 
-    AllPaths = neighbors_for_person(source) # Get all possible paths from the source ID
-    for path in AllPaths: # Loop through all given paths
-        NextNode = Node(path,None,None) # Create a Node
-        Frontier.add(NextNode) # Add the Node to the Frontier
-
-    while Frontier.empty() == False: # Stay inside the loop while the frontier is not empty
-        if Element != 1:
-            PastElement = Element # Save the past element
-            Element = Frontier.remove() # Remove the first element from the queue
-            PastElement.action(Element) # Set the previous elements action as the new element
-        else:
-            Element = Frontier.remove() # Remove the first element from the queue
-
-        VisitedFrontier.add((Element.state)) # Add the state to the Visited Frontier
-       
-        AllPaths = neighbors_for_person(Element.state[1]) # Get all possible paths from the current node
-        for path in AllPaths: # Loop through all given paths
-            NextNode = Node(path,Element,None) # Create a Node
-            if NextNode.state[1] == target: # Check if the Person ID of the nodes state is equal to the target Person ID
-                GoalFound = True
-                break # Break out of the loop
-            if NextNode.state in VisitedFrontier == False:
-                Frontier.add(NextNode) # Add the Node to the Frontier
-            
-        if GoalFound:
-            ans = [] # Initialize an empty list
-            while NextNode.parent: # Loop through while the nodes have a parent 
-                print(NextNode.state)
-                print(NextNode.parent)
-                ans.append(NextNode.state)
-                NextNode = NextNode.parent
-            # ans.append(NextNode.state)
-            ans.reverse()
-            return ans
+    if source == target: # Check if the source is the target
+        ans = [] # Initialize a list for the answer
+        return ans # Return the empty list as the source and the target are the same
     
-    raise Exception('No Link Found')
+    node = Node(source, None, None) # Create a starting node
+    Frontier = QueueFrontier() # Initialize the frontier that will be used to solve the problem
+    Visisted = set() # Initialize a set for visited people
+    Frontier.add(node) # Add the starting node
+
+    while Frontier.empty() == False: # Loop through the frontier as long as it has nodes
+        CurrentNode = Frontier.remove() # Remove the first node from the frontier
+        Visisted.add(CurrentNode) # Add the person ID to the visisted set
+
+        neighbors = neighbors_for_person(CurrentNode.state) # Get all possible neighbors for the current person
+        for movie, person in neighbors: # Get the movie and person from each neighbor
+
+            #Check to ensure the person is not in the visited set and that the person is not already in the frontier
+            if (person not in Visisted) and (Frontier.contains_state(person) == False): 
+                NewNode = Node(person, CurrentNode, movie) # Create a new node with the person, currentNode, and movie as the state, parent, and action
+
+                if NewNode.state == target: # Check if the new nodes state (person ID) is equal to the target ID
+                    ans = [] # Initialize an answer list
+                    while NewNode.parent is not None: # Backtrack through the nodes as long as the parent is not none
+                        ans.append( (NewNode.action, NewNode.state) ) # Append the current node to the answer list
+                        NewNode = NewNode.parent # backtrack to the node before the current node
+                    ans.reverse() # Reverse the answer array
+                    return ans # return the answer array
+                
+                Frontier.add(NewNode) # Add the new node to the frontier
+    return None # Return none if no link can be found
+    
 
 
 def person_id_for_name(name):
